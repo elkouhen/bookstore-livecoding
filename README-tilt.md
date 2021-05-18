@@ -98,17 +98,34 @@ docker_build('k3d-registry:46697/gui', 'bookstore-gui',
 
 Montrer message de synchro d'1 fichier
 
-## Optimisation FileSync (mvn)
+## Optimisation JIB + FileSync (mvn)
 
 branche tilt-step5
 
 ```python 
-load('ext://restart_process', 'docker_build_with_restart')
+custom_build('k3d-registry:46697/api',
+  'cd bookstore-api; mvn spring-boot:build-image -D image=$EXPECTED_REF',
+  ['bookstore-api/pom.xml', 'bookstore-api/target/classes'],
+  live_update = [
+    sync('bookstore-api/target/classes', '/workspace/BOOT-INF/classes')
+  ]
+)
+k8s_yaml(['bookstore-api/kubernetes/deployment.yml', 'bookstore-api/kubernetes/service.yml'])
+k8s_resource('api-deployment', resource_deps=['pg-deployment'])
+```
 
-docker_build_with_restart('k3d-registry:46697/api', 'bookstore-api',
-    entrypoint='mvn spring-boot:run',
-    live_update=[
-        sync('bookstore-api/src', '/home/app/src'),
-        sync('bookstore-api/pom.xml', '/home/app/pom.xml')
-])
+```xml
+<properties>
+    <image>k3d-registry:46697/api</image>
+</properties>
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <excludeDevtools>false</excludeDevtools>
+        <image>
+            <name>${image}</name>
+        </image>
+    </configuration>
+</plugin>
 ```

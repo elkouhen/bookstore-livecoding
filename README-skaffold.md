@@ -149,7 +149,7 @@ Vérifier la synchro d'un fichier modifié
 
 https://github.com/GoogleContainerTools/skaffold/issues/2357
 
-## Optimisation JIB
+## Optimisation JIB + FileSync
 
 branche step6
 
@@ -190,9 +190,7 @@ Ajouter fragment
 ### Skaffold
 
 
-Corriger conf
-
-Rajouter conf job
+Corriger conf skaffold
 
 ```xml
 build:
@@ -205,5 +203,5 @@ build:
 
 ```
 
-Vérifier la structure de l'image docker
+Vérifier la structure de l'image docker avec dive
 
